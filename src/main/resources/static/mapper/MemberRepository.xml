@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.gongdaeoppa.demo3.repository.MemberRepository">
+
+
+
+
+	<update id="modify">
+		UPDATE `member`
+			<set>
+				updateDate = NOW(),
+				<if test="loginPw != null">
+				loginPw = #{loginPw},
+				</if>
+				<if test="name != null">
+				name = #{name},
+				</if>
+				<if test="nickname != null">
+				nickname = #{nickname},
+				</if>
+				<if test="email != null">
+				email = #{email},
+				</if>
+				<if test="cellphoneNo != null">
+				cellphoneNo = #{cellphoneNo},
+				</if>
+			</set>
+			WHERE id = #{id}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="getForPrintMembers" resultType="Member">
+		SELECT M.*
+			FROM `member` AS M
+			WHERE 1
+			AND delStatus = 0
+			<if test="authLevel != 0">
+			    AND M.authLevel = #{authLevel}
+			</if>
+			<if test="searchKeyword != ''">
+				<choose>
+					<when test="searchKeywordTypeCode == 'loginId'">
+						AND M.loginId LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="searchKeywordTypeCode == 'name'">
+						AND M.name LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="searchKeywordTypeCode == 'nickname'">
+						AND M.nickname LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<otherwise>
+						AND (
+							M.loginId LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR
+							M.name LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR
+							M.nickname LIKE CONCAT('%', #{searchKeyword}, '%')
+						)
+					</otherwise>
+				</choose>
+			</if>
+			ORDER BY M.id DESC
+			<if test="limitTake != -1">
+				LIMIT #{limitStart}, #{limitTake}
+			</if>
+	</select>
+	
+	
+	
+	
+	
+	
+	<select id="getMembersCount" resultType="int">
+		SELECT COUNT(*) AS cnt
+			FROM `member` AS M
+			WHERE 1
+			AND delStatus = 0
+			<if test="authLevel != 0">
+			    AND M.authLevel = #{authLevel}
+			</if>
+			<if test="searchKeyword != ''">
+				<choose>
+					<when test="searchKeywordTypeCode == 'loginId'">
+						AND M.loginId LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="searchKeywordTypeCode == 'name'">
+						AND M.name LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="searchKeywordTypeCode == 'nickname'">
+						AND M.nickname LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<otherwise>
+						AND (
+							M.loginId LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR
+							M.name LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR
+							M.nickname LIKE CONCAT('%', #{searchKeyword}, '%')
+						)
+					</otherwise>
+				</choose>
+			</if>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<update id="deleteMember">
+		UPDATE `member`
+            <set>
+            	updateDate = NOW(),
+            	delStatus = 1,
+            	delDate = NOW(),
+            </set>
+            WHERE id = #{id}
+	</update>
+	
+	
+	
+	
+	
+	
+</mapper>
